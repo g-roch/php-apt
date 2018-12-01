@@ -26,15 +26,48 @@ class Repo
     * @param string $uri URI du dépôt
     * @param string $cacheDirectory Repertoire permettant de stocker les fichier
     *                               télécharger du dépôt
-    * @param array $distrib Liste des distributions à prendre en compte
-    * @param array $component Liste des composants à prendre en compte
+    * @param string $distrib Distribution du dépôt
+    * @param string $component Liste des composants à prendre en compte
+    *
+    * @note Ajout d'URI et de distribution supplémentaire possible avec 
+    * APT::Repo::addMirror APT::Repo::addDistrib
     */
-   public function __construct(string $uri, string $cacheDirectory, array $distrib=[], array $component=[])
+   public function __construct(string $uri, string $cacheDirectory, string $distrib=null, string ...$component)
    {
       $this->uri = [$uri];
       if(!is_dir($cacheDirectory)) mkdir($cacheDirectory);
       $this->cacheDirectory = $cacheDirectory;
-      $this->distrib = $distrib;
+      if(isset($distrib)) $this->distrib = [$distrib => $distrib];
+      else $this->distrib = [];
       $this->component = $component;
+   }
+
+   /**
+    * @brief Ajout de mirroir
+    * @param string $uri URI du miroir
+    */
+   public function addMirror(string ...$uri)
+   {
+      $this->uri = array_merge($this->uri, $uri);
+   }
+
+   /**
+    * @brief Ajout d'une distribution à la config (potenciellement avec des aliases)
+    * @param string $distrib nom de la distribution
+    * @param string $alias alias disponible pour l'accès à la distribution sur le dépôt
+    */
+   public function addDistrib(string $distrib, string ...$alias)
+   {
+      $this->distrib[$distrib] = $distrib;
+      foreach($alias as $i) $this->distrib[$i] = $distrib;
+   }
+
+   /**
+    * @brief Ajout de composants
+    * @param string $component Composants à ajouter
+    */
+   public function addComponent(string ...$component)
+   {
+      $this->component = array_merge($this->component, $component);
    }
 }

@@ -10,6 +10,12 @@ define('CACHE_DIR', __DIR__.'/../cache'.substr(__FILE__, strlen(__DIR__), -4));
 if(!is_dir(__DIR__.'/../cache')) mkdir(__DIR__.'/../cache');
 
 
-# deb http://127.0.0.1/debian/ stretch main non-free contrib
 # deb http://ftp.ch.debian.org/debian/ stretch main non-free contrib
-var_dump(new APT\Repo('http://127.0.0.1/debian/', CACHE_DIR));
+# deb http://127.0.0.1/debian/ stretch main non-free contrib
+
+$repo = new APT\Repo('http://ftp.ch.debian.org/debian/', CACHE_DIR);
+$repo->addMirror('http://127.0.0.1/debian/');
+$repo->addDistrib('stretch', 'stable', 'Debian9.6');
+$repo->addComponent('main', 'non-free', 'contrib');
+
+var_dump($repo);
